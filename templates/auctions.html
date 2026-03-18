@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Auction Management</h2>
+    <a href="{{ url_for('create_auction') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create New Auction
+    </a>
+</div>
+
+<div class="row">
+    {% for auction in auctions %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header {% if auction.status == 'completed' %}bg-success{% elif auction.status == 'ongoing' %}bg-warning{% else %}bg-info{% endif %} text-white">
+                <div class="d-flex justify-content-between">
+                    <h5 class="mb-0">{{ auction.name }}</h5>
+                    <span class="badge bg-light text-dark">{{ auction.status|upper }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p><strong>Season:</strong> {{ auction.season.name }}</p>
+                <p><strong>Auction Date:</strong> {{ auction.auction_date.strftime('%d %b %Y') }}</p>
+                <p><strong>Total Players:</strong> {{ auction.participations.count() }}</p>
+                <p><strong>Sold Players:</strong> {{ auction.participations.filter_by(status='sold').count() }}</p>
+                <p><strong>Unsold Players:</strong> {{ auction.participations.filter_by(status='unsold').count() }}</p>
+                <p><strong>Pending:</strong> {{ auction.participations.filter_by(status='pending').count() }}</p>
+            </div>
+            <div class="card-footer">
+                {% if auction.status == 'upcoming' %}
+                    <a href="{{ url_for('conduct_auction', id=auction.id) }}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-gavel"></i> Conduct Auction
+                    </a>
+                {% elif auction.status == 'ongoing' %}
+                    <a href="{{ url_for('conduct_auction', id=auction.id) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-play"></i> Continue Auction
+                    </a>
+                {% else %}
+                    <a href="#" class="btn btn-info btn-sm">
+                        <i class="fas fa-chart-bar"></i> View Results
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

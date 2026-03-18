@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">{{ team.name }} ({{ team.short_name }})</h4>
+                    <a href="{{ url_for('teams') }}" class="btn btn-light btn-sm">Back to Teams</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Team Details</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th>Owner:</th>
+                                <td>{{ team.owner or 'Not specified' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Coach:</th>
+                                <td>{{ team.coach or 'Not specified' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Home Ground:</th>
+                                <td>{{ team.home_ground or 'Not specified' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Budget:</th>
+                                <td>₹{{ "%.2f"|format(team.total_budget/10000000) }} Crore</td>
+                            </tr>
+                            <tr>
+                                <th>Amount Spent:</th>
+                                <td>₹{{ "%.2f"|format(team.spent_amount/10000000) }} Crore</td>
+                            </tr>
+                            <tr>
+                                <th>Remaining Budget:</th>
+                                <td>₹{{ "%.2f"|format((team.total_budget - team.spent_amount)/10000000) }} Crore</td>
+                            </tr>
+                        </table>
+
+                        <div class="progress mt-3" style="height: 20px;">
+                            {% set budget_percentage = (team.spent_amount / team.total_budget * 100) %}
+                            <div class="progress-bar {% if budget_percentage > 80 %}bg-warning{% elif budget_percentage > 90 %}bg-danger{% else %}bg-success{% endif %}"
+                                 role="progressbar"
+                                 style="width: {{ budget_percentage }}%"
+                                 aria-valuenow="{{ budget_percentage }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                {{ "%.1f"|format(budget_percentage) }}% Used
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5>Team Statistics</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th>Total Players:</th>
+                                <td>{{ players|length }}</td>
+                            </tr>
+                            <tr>
+                                <th>Batsmen:</th>
+                                <td>{{ players|selectattr('role', 'equalto', 'Batsman')|list|length }}</td>
+                            </tr>
+                            <tr>
+                                <th>Bowlers:</th>
+                                <td>{{ players|selectattr('role', 'equalto', 'Bowler')|list|length }}</td>
+                            </tr>
+                            <tr>
+                                <th>All-rounders:</th>
+                                <td>{{ players|selectattr('role', 'equalto', 'All-rounder')|list|length }}</td>
+                            </tr>
+                            <tr>
+                                <th>Wicket-keepers:</th>
+                                <td>{{ players|selectattr('role', 'equalto', 'Wicket-keeper')|list|length }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5 class="mt-4">Team Squad</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Player Name</th>
+                                <th>Role</th>
+                                <th>Age</th>
+                                <th>Batting Style</th>
+                                <th>Bowling Style</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for player in players %}
+                            <tr>
+                                <td>{{ player.name }}</td>
+                                <td>
+                                    {% if player.role == 'Batsman' %}
+                                        <span class="badge bg-primary">{{ player.role }}</span>
+                                    {% elif player.role == 'Bowler' %}
+                                        <span class="badge bg-success">{{ player.role }}</span>
+                                    {% elif player.role == 'All-rounder' %}
+                                        <span class="badge bg-warning">{{ player.role }}</span>
+                                    {% else %}
+                                        <span class="badge bg-info">{{ player.role }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ player.age }}</td>
+                                <td>{{ player.batting_style or '-' }}</td>
+                                <td>{{ player.bowling_style or '-' }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="calculatePlayerStats({{ player.id }})">
+                                        <i class="fas fa-chart-bar"></i> Stats
+                                    </button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">No players in this team yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Player Stats Modal -->
+<div class="modal fade" id="statsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Player Statistics</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center" id="statsContent">
+                    Loading statistics...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculatePlayerStats(playerId) {
+    $('#statsModal').modal('show');
+    $('#statsContent').html('Loading statistics...');
+
+    $.ajax({
+        url: '/api/player_stats/' + playerId,
+        method: 'GET',
+        success: function(data) {
+            var html = `
+                <table class="table">
+                    <tr>
+                        <th>Batting Average:</th>
+                        <td>${data.batting_avg}</td>
+                    </tr>
+                    <tr>
+                        <th>Strike Rate:</th>
+                        <td>${data.strike_rate}</td>
+                    </tr>
+                    <tr>
+                        <th>Bowling Average:</th>
+                        <td>${data.bowling_avg}</td>
+                    </tr>
+                    <tr>
+                        <th>Economy Rate:</th>
+                        <td>${data.economy}</td>
+                    </tr>
+                </table>
+            `;
+            $('#statsContent').html(html);
+        },
+        error: function() {
+            $('#statsContent').html('<p class="text-danger">Error loading statistics</p>');
+        }
+    });
+}
+</script>
+{% endblock %}

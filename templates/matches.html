@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Match Management</h2>
+    <a href="{{ url_for('schedule_match') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Schedule Match
+    </a>
+</div>
+
+<div class="row">
+    {% for match in matches %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header {% if match.status == 'completed' %}bg-success{% elif match.status == 'ongoing' %}bg-warning{% else %}bg-info{% endif %} text-white">
+                <div class="d-flex justify-content-between">
+                    <span>Match {{ match.id }}</span>
+                    <span class="badge bg-light text-dark">{{ match.status|upper }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-5">
+                        <h5>{{ match.team1.short_name }}</h5>
+                        <small>{{ match.team1.name }}</small>
+                    </div>
+                    <div class="col-2">
+                        <h3>VS</h3>
+                    </div>
+                    <div class="col-5">
+                        <h5>{{ match.team2.short_name }}</h5>
+                        <small>{{ match.team2.name }}</small>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Date:</strong> {{ match.match_date.strftime('%d %b %Y') }}</p>
+                        <p><strong>Time:</strong> {{ match.match_date.strftime('%I:%M %p') }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Venue:</strong> {{ match.venue }}</p>
+                        <p><strong>Season:</strong> {{ match.season.name }}</p>
+                    </div>
+                </div>
+
+                {% if match.result %}
+                <div class="alert alert-info">
+                    {{ match.result }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('match_scoreboard', id=match.id) }}" class="btn btn-sm btn-info">
+                    <i class="fas fa-chart-line"></i> View Scoreboard
+                </a>
+                {% if match.status != 'completed' %}
+                <a href="{{ url_for('update_score', id=match.id) }}" class="btn btn-sm btn-warning">
+                    <i class="fas fa-edit"></i> Update Score
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

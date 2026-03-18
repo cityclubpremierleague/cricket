@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Register New Player</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="age" class="form-label">Age *</label>
+                            <input type="number" class="form-control" id="age" name="age" min="15" max="50" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label">Player Role *</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="Batsman">Batsman</option>
+                                <option value="Bowler">Bowler</option>
+                                <option value="All-rounder">All-rounder</option>
+                                <option value="Wicket-keeper">Wicket-keeper</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="batting_style" class="form-label">Batting Style</label>
+                            <select class="form-select" id="batting_style" name="batting_style">
+                                <option value="">Select Batting Style</option>
+                                <option value="Right-handed">Right-handed</option>
+                                <option value="Left-handed">Left-handed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bowling_style" class="form-label">Bowling Style</label>
+                            <select class="form-select" id="bowling_style" name="bowling_style">
+                                <option value="">Select Bowling Style</option>
+                                <option value="Right-arm fast">Right-arm fast</option>
+                                <option value="Right-arm medium">Right-arm medium</option>
+                                <option value="Left-arm fast">Left-arm fast</option>
+                                <option value="Left-arm medium">Left-arm medium</option>
+                                <option value="Right-arm off-spin">Right-arm off-spin</option>
+                                <option value="Left-arm orthodox">Left-arm orthodox</option>
+                                <option value="Leg-spin">Leg-spin</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="base_price" class="form-label">Base Price (in Rupees) *</label>
+                            <input type="number" class="form-control" id="base_price" name="base_price" value="200"
+                                   readonly disabled>
+                            <small class="text-muted">Default base price is ₹200 for all players (fixed)</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="jersey" class="form-label">Jersey Size</label>
+                            <select class="form-select" id="jersey" name="jersey" required>
+                                <option value="">Select Size</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="XXXL">XXXL</option>
+                            </select>
+<!--                            <input type="jersey" class="form-control" id="jersey" name="jersey">-->
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                        </div>
+                    </div>
+
+                    <!-- New Image Upload Field -->
+                    <div class="mb-3">
+                        <label for="player_image" class="form-label">Player Image</label>
+                        <input type="file" class="form-control" id="player_image" name="player_image" accept="image/*">
+                        <small class="text-muted">Upload player photo (JPG, PNG, GIF)</small>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('players') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Register Player</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

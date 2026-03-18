@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Schedule New Match</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="season_id" class="form-label">Season *</label>
+                        <select class="form-select" id="season_id" name="season_id" required>
+                            <option value="">Select Season</option>
+                            {% for season in seasons %}
+                            <option value="{{ season.id }}">{{ season.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="team1_id" class="form-label">Team 1 *</label>
+                            <select class="form-select" id="team1_id" name="team1_id" required>
+                                <option value="">Select Team</option>
+                                {% for team in teams %}
+                                <option value="{{ team.id }}">{{ team.name }} ({{ team.short_name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="team2_id" class="form-label">Team 2 *</label>
+                            <select class="form-select" id="team2_id" name="team2_id" required>
+                                <option value="">Select Team</option>
+                                {% for team in teams %}
+                                <option value="{{ team.id }}">{{ team.name }} ({{ team.short_name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="match_date" class="form-label">Match Date & Time *</label>
+                        <input type="datetime-local" class="form-control" id="match_date" name="match_date" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="venue" class="form-label">Venue *</label>
+                        <input type="text" class="form-control" id="venue" name="venue" required>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('matches') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Schedule Match</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

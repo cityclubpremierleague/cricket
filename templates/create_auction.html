@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Create New Auction</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Auction Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="season_id" class="form-label">Season</label>
+                        <select class="form-select" id="season_id" name="season_id" required>
+                            <option value="">Select Season</option>
+                            {% for season in seasons %}
+                            <option value="{{ season.id }}">{{ season.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="auction_date" class="form-label">Auction Date</label>
+                        <input type="date" class="form-control" id="auction_date" name="auction_date" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Players for Auction</label>
+                        <div class="card">
+                            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                                {% for player in players %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="players" value="{{ player.id }}" id="player_{{ player.id }}">
+                                    <label class="form-check-label" for="player_{{ player.id }}">
+                                        {{ player.name }} - {{ player.role }} (Base: ₹{{ "%.2f"|format(player.base_price/100000) }}L)
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Auction</button>
+                    <a href="{{ url_for('auctions') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

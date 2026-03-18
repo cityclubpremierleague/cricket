@@ -1,0 +1,4 @@
+# Ignore environment files
+.env
+ca.pem
+db_config.ini

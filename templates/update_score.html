@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Update Match Score</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <h5>{{ match.team1_home.name }} vs {{ match.team2_away.name }}</h5>
+                    <p>Venue: {{ match.venue }} | Date: {{ match.match_date.strftime('%d %b %Y %I:%M %p') }}</p>
+                </div>
+
+                <form method="POST" id="scoreForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="innings_number" class="form-label">Innings Number *</label>
+                            <select class="form-select" id="innings_number" name="innings_number" required>
+                                <option value="">Select Innings</option>
+                                <option value="1">Innings 1</option>
+                                <option value="2">Innings 2</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="team_id" class="form-label">Batting Team *</label>
+                            <select class="form-select" id="team_id" name="team_id" required>
+                                <option value="">Select Team</option>
+                                {% for team in teams %}
+                                <option value="{{ team.id }}">{{ team.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Batting Performances - Team 1 ({{ match.team1_home.name }})</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="battingTable1">
+                                    <thead>
+                                        <tr>
+                                            <th>Player</th>
+                                            <th>Runs</th>
+                                            <th>Balls</th>
+                                            <th>4s</th>
+                                            <th>6s</th>
+                                            <th>Out?</th>
+                                            <th>Out Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for player in players_team1 %}
+                                        <tr>
+                                            <td>
+                                                {{ player.name }}
+                                                <input type="hidden" name="player_id_{{ loop.index0 }}" value="{{ player.id }}">
+                                                <input type="hidden" name="player_index[]" value="{{ loop.index0 }}">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="runs_scored_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="balls_faced_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="fours_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="sixes_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="checkbox" class="form-check-input"
+                                                       name="is_out_{{ loop.index0 }}">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm" name="out_type_{{ loop.index0 }}">
+                                                    <option value="">Select</option>
+                                                    <option value="Bowled">Bowled</option>
+                                                    <option value="Caught">Caught</option>
+                                                    <option value="LBW">LBW</option>
+                                                    <option value="Run Out">Run Out</option>
+                                                    <option value="Stumped">Stumped</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Batting Performances - Team 2 ({{ match.team2_away.name }})</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="battingTable2">
+                                    <thead>
+                                        <tr>
+                                            <th>Player</th>
+                                            <th>Runs</th>
+                                            <th>Balls</th>
+                                            <th>4s</th>
+                                            <th>6s</th>
+                                            <th>Out?</th>
+                                            <th>Out Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for player in players_team2 %}
+                                        <tr>
+                                            <td>
+                                                {{ player.name }}
+                                                <input type="hidden" name="player_id_{{ loop.index0 + players_team1|length }}" value="{{ player.id }}">
+                                                <input type="hidden" name="player_index[]" value="{{ loop.index0 + players_team1|length }}">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="runs_scored_{{ loop.index0 + players_team1|length }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="balls_faced_{{ loop.index0 + players_team1|length }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="fours_{{ loop.index0 + players_team1|length }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="sixes_{{ loop.index0 + players_team1|length }}" value="0" min="0">
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="checkbox" class="form-check-input"
+                                                       name="is_out_{{ loop.index0 + players_team1|length }}">
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm" name="out_type_{{ loop.index0 + players_team1|length }}">
+                                                    <option value="">Select</option>
+                                                    <option value="Bowled">Bowled</option>
+                                                    <option value="Caught">Caught</option>
+                                                    <option value="LBW">LBW</option>
+                                                    <option value="Run Out">Run Out</option>
+                                                    <option value="Stumped">Stumped</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Bowling Performances</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="bowlingTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Player</th>
+                                            <th>Overs</th>
+                                            <th>Maidens</th>
+                                            <th>Runs Conceded</th>
+                                            <th>Wickets</th>
+                                            <th>Catches</th>
+                                            <th>Stumpings</th>
+                                            <th>Run Outs</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% set all_players = players_team1 + players_team2 %}
+                                        {% for player in all_players %}
+                                        <tr>
+                                            <td>
+                                                {{ player.name }}
+                                                <input type="hidden" name="bowler_id_{{ loop.index0 }}" value="{{ player.id }}">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="overs_bowled_{{ loop.index0 }}" value="0" min="0" step="0.1">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="maidens_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="runs_conceded_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="wickets_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="catches_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="stumpings_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="run_outs_{{ loop.index0 }}" value="0" min="0">
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if match.status == 'ongoing' %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0">Complete Match</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label for="result" class="form-label">Match Result</label>
+                                    <input type="text" class="form-control" id="result" name="result"
+                                           placeholder="e.g., Team A won by 5 wickets">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="man_of_match" class="form-label">Man of the Match</label>
+                                    <select class="form-select" id="man_of_match" name="man_of_match">
+                                        <option value="">Select Player</option>
+                                        {% for player in all_players %}
+                                        <option value="{{ player.id }}">{{ player.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" formaction="{{ url_for('complete_match', id=match.id) }}"
+                                        class="btn btn-warning" onclick="return confirm('Complete this match?')">
+                                    <i class="fas fa-check-circle"></i> Complete Match
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('match_scoreboard', id=match.id) }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Score
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Auto-calculate strike rate and economy
+    $('input[type="number"]').on('change', function() {
+        // Additional validation can be added here
+    });
+
+    // Disable out type dropdown when not out
+    $('input[type="checkbox"]').on('change', function() {
+        var row = $(this).closest('tr');
+        var outTypeSelect = row.find('select');
+        if($(this).is(':checked')) {
+            outTypeSelect.prop('required', true);
+        } else {
+            outTypeSelect.prop('required', false).val('');
+        }
+    });
+});
+</script>
+{% endblock %}

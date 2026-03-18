@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="text-center mb-4">Cricket Tournament Management System</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">
+                <i class="fas fa-users"></i> Total Players
+            </div>
+            <div class="card-body">
+                <h5 class="card-title display-4">{{ stats.total_players }}</h5>
+                <a href="{{ url_for('players') }}" class="text-white">View Players →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">
+                <i class="fas fa-shield-alt"></i> Total Teams
+            </div>
+            <div class="card-body">
+                <h5 class="card-title display-4">{{ stats.total_teams }}</h5>
+                <a href="{{ url_for('teams') }}" class="text-white">View Teams →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">
+                <i class="fas fa-calendar-check"></i> Total Matches
+            </div>
+            <div class="card-body">
+                <h5 class="card-title display-4">{{ stats.total_matches }}</h5>
+                <a href="{{ url_for('matches') }}" class="text-white">View Matches →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">
+                <i class="fas fa-trophy"></i> Active Season
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    {% if stats.active_season %}
+                        {{ stats.active_season.name }}
+                    {% else %}
+                        No Active Season
+                    {% endif %}
+                </h5>
+                <a href="{{ url_for('seasons') }}" class="text-white">Manage Seasons →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{{ url_for('add_player') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-plus"></i> Register New Player
+                    </a>
+                    <a href="{{ url_for('add_team') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle"></i> Add New Team
+                    </a>
+                    <a href="{{ url_for('create_auction') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-gavel"></i> Create New Auction
+                    </a>
+                    <a href="{{ url_for('schedule_match') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-plus"></i> Schedule Match
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Recent Matches</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for match in matches[:5] %}
+                        <a href="{{ url_for('match_scoreboard', id=match.id) }}" class="list-group-item list-group-item-action">
+                            {{ match.team1.name }} vs {{ match.team2.name }}
+                            <span class="badge bg-info float-end">{{ match.status }}</span>
+                        </a>
+                    {% else %}
+                        <p class="text-muted">No matches scheduled yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

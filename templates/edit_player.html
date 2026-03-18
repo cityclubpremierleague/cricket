@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0">Edit Player: {{ player.name }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ player.name }}" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="age" class="form-label">Age *</label>
+                            <input type="number" class="form-control" id="age" name="age" min="15" max="50" value="{{ player.age }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label">Player Role *</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="Batsman" {% if player.role == 'Batsman' %}selected{% endif %}>Batsman</option>
+                                <option value="Bowler" {% if player.role == 'Bowler' %}selected{% endif %}>Bowler</option>
+                                <option value="All-rounder" {% if player.role == 'All-rounder' %}selected{% endif %}>All-rounder</option>
+                                <option value="Wicket-keeper" {% if player.role == 'Wicket-keeper' %}selected{% endif %}>Wicket-keeper</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="batting_style" class="form-label">Batting Style</label>
+                            <select class="form-select" id="batting_style" name="batting_style">
+                                <option value="">Select Batting Style</option>
+                                <option value="Right-handed" {% if player.batting_style == 'Right-handed' %}selected{% endif %}>Right-handed</option>
+                                <option value="Left-handed" {% if player.batting_style == 'Left-handed' %}selected{% endif %}>Left-handed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bowling_style" class="form-label">Bowling Style</label>
+                            <select class="form-select" id="bowling_style" name="bowling_style">
+                                <option value="">Select Bowling Style</option>
+                                <option value="Right-arm fast" {% if player.bowling_style == 'Right-arm fast' %}selected{% endif %}>Right-arm fast</option>
+                                <option value="Right-arm medium" {% if player.bowling_style == 'Right-arm medium' %}selected{% endif %}>Right-arm medium</option>
+                                <option value="Left-arm fast" {% if player.bowling_style == 'Left-arm fast' %}selected{% endif %}>Left-arm fast</option>
+                                <option value="Left-arm medium" {% if player.bowling_style == 'Left-arm medium' %}selected{% endif %}>Left-arm medium</option>
+                                <option value="Right-arm off-spin" {% if player.bowling_style == 'Right-arm off-spin' %}selected{% endif %}>Right-arm off-spin</option>
+                                <option value="Left-arm orthodox" {% if player.bowling_style == 'Left-arm orthodox' %}selected{% endif %}>Left-arm orthodox</option>
+                                <option value="Leg-spin" {% if player.bowling_style == 'Leg-spin' %}selected{% endif %}>Leg-spin</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="base_price" class="form-label">Base Price (in Lakhs) *</label>
+                            <input type="number" class="form-control" id="base_price" name="base_price" step="0.1" min="1" value="{{ "%.1f"|format(player.base_price/100000) }}" required>
+                            <small class="text-muted">1 Lakh = ₹100,000</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ player.email }}">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ player.phone }}">
+                        </div>
+                    </div>
+
+                    <!-- Image Upload Field -->
+                    <div class="mb-3">
+                        <label for="player_image" class="form-label">Player Image</label>
+                        {% if player.image_url %}
+                        <div class="mb-2">
+                            <img src="{{ player.image_url }}" alt="{{ player.name }}" style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+                            <small class="d-block">Current image. Upload new to replace.</small>
+                        </div>
+                        {% endif %}
+                        <input type="file" class="form-control" id="player_image" name="player_image" accept="image/*">
+                        <small class="text-muted">Upload player photo (JPG, PNG, GIF)</small>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('players') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-warning">Update Player</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

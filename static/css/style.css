@@ -1,0 +1,99 @@
+/* Custom Styles */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: bold;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 8px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.progress {
+    height: 10px;
+    border-radius: 5px;
+}
+
+.scoreboard-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.scoreboard-card .card-body {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.auction-list-item {
+    border-left: 4px solid #007bff;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.auction-list-item:hover {
+    background-color: #f8f9fa;
+    border-left-width: 8px;
+}
+
+/* Animation for score updates */
+@keyframes scoreUpdate {
+    0% { background-color: #fff3cd; }
+    100% { background-color: transparent; }
+}
+
+.score-updated {
+    animation: scoreUpdate 2s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .display-4 {
+        font-size: 2rem;
+    }
+}

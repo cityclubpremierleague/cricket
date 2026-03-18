@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Player Season Registration</h4>
+            </div>
+            <div class="card-body">
+
+                <!-- Bulk Registration Form -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Register Players for Season</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('bulk_register_players_for_season') }}">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select class="form-select" name="season_id" required>
+                                        <option value="">Select Season</option>
+                                        {% for season in seasons %}
+                                        <option value="{{ season.id }}" {% if season.is_active %}selected{% endif %}>
+                                            {{ season.name }} {% if season.is_active %}(Active){% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn btn-primary">Register Selected Players</button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive mt-3">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="select_all"></th>
+                                            <th>Photo</th>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Role</th>
+                                            <th>Current Season Status</th>
+                                            <th>Previous Seasons</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for player in players %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="player_ids[]" value="{{ player.id }}" class="player-checkbox">
+                                            </td>
+                                            <td>
+                                                {% if player.image_url %}
+                                                    <img src="{{ player.image_url }}" alt="{{ player.name }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
+                                                {% else %}
+                                                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ player.id }}</td>
+                                            <td>{{ player.name }}</td>
+                                            <td>{{ player.role }}</td>
+                                            <td>
+                                                {% set active_reg = player.season_registrations.filter_by(season_id=active_season.id).first() if active_season else None %}
+                                                {% if active_reg %}
+                                                    <span class="badge bg-success">Registered</span>
+                                                    <small>({{ active_reg.status }})</small>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Not Registered</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% for reg in player.season_registrations %}
+                                                    {% if not active_season or reg.season_id != active_season.id %}
+                                                        <span class="badge bg-info">{{ reg.season.name }}</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Season-wise Registration Summary -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Registration Summary by Season</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for season in seasons %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card {% if season.is_active %}border-success{% endif %}">
+                                    <div class="card-header {% if season.is_active %}bg-success text-white{% endif %}">
+                                        {{ season.name }}
+                                    </div>
+                                    <div class="card-body">
+                                        <p>Registered: {{ season.player_registrations.count() }}</p>
+                                        <p>In Auction: {{ season.player_registrations.filter_by(status='in_auction').count() }}</p>
+                                        <p>Sold: {{ season.player_registrations.filter_by(status='sold').count() }}</p>
+                                        <p>Unsold: {{ season.player_registrations.filter_by(status='unsold').count() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#select_all').change(function() {
+        $('.player-checkbox').prop('checked', $(this).prop('checked'));
+    });
+});
+</script>
+{% endblock %}

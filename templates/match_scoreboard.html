@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Match Scoreboard</h4>
+                    <span class="badge bg-light text-dark">{{ match.status|upper }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-4">
+                    <div class="col-5">
+                        <h3>{{ match.team1_home.name }}</h3>
+                        <h2>{{ match.team1_home.short_name }}</h2>
+                    </div>
+                    <div class="col-2">
+                        <h1>VS</h1>
+                        <p>{{ match.match_date.strftime('%d %b %Y') }}</p>
+                    </div>
+                    <div class="col-5">
+                        <h3>{{ match.team2_away.name }}</h3>
+                        <h2>{{ match.team2_away.short_name }}</h2>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Match Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Venue:</strong> {{ match.venue }}</p>
+                                <p><strong>Toss:</strong>
+                                    {% if match.toss_winner_team %}
+                                        {{ match.toss_winner_team.name }} won the toss and chose to {{ match.toss_decision }}
+                                    {% else %}
+                                        Yet to be decided
+                                    {% endif %}
+                                </p>
+                                <p><strong>Result:</strong> {{ match.result or 'Match in progress' }}</p>
+                                {% if match.man_of_match %}
+                                <p><strong>Man of the Match:</strong> {{ match.man_of_match.name }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Current Score</h5>
+                            </div>
+                            <div class="card-body">
+                                {% for inning in innings %}
+                                <div class="mb-3">
+                                    <h6>Innings {{ inning.innings_number }}</h6>
+                                    <h3>{{ inning.team.name }}: {{ inning.total_runs }}/{{ inning.total_wickets }}</h3>
+                                    <p>Overs: {{ "%.1f"|format(inning.total_overs) }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% for inning in innings %}
+                <div class="card mb-4">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0">Innings {{ inning.innings_number }} - {{ inning.team.name }} Batting</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Batsman</th>
+                                        <th>Runs</th>
+                                        <th>Balls</th>
+                                        <th>4s</th>
+                                        <th>6s</th>
+                                        <th>SR</th>
+                                        <th>How Out</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for perf in inning.performances %}
+                                    {% if perf.runs_scored > 0 or perf.balls_faced > 0 %}
+                                    <tr>
+                                        <td>{{ perf.player.name }}</td>
+                                        <td>{{ perf.runs_scored }}</td>
+                                        <td>{{ perf.balls_faced }}</td>
+                                        <td>{{ perf.fours }}</td>
+                                        <td>{{ perf.sixes }}</td>
+                                        <td>{{ "%.2f"|format((perf.runs_scored/perf.balls_faced*100) if perf.balls_faced > 0 else 0) }}</td>
+                                        <td>
+                                            {% if perf.is_out %}
+                                                {{ perf.out_type }}
+                                            {% else %}
+                                                Not Out
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h6 class="mt-3">Bowling</h6>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Bowler</th>
+                                        <th>Overs</th>
+                                        <th>Maidens</th>
+                                        <th>Runs</th>
+                                        <th>Wickets</th>
+                                        <th>Economy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for perf in inning.performances %}
+                                    {% if perf.overs_bowled > 0 %}
+                                    <tr>
+                                        <td>{{ perf.player.name }}</td>
+                                        <td>{{ "%.1f"|format(perf.overs_bowled) }}</td>
+                                        <td>{{ perf.maidens }}</td>
+                                        <td>{{ perf.runs_conceded }}</td>
+                                        <td>{{ perf.wickets }}</td>
+                                        <td>{{ "%.2f"|format(perf.runs_conceded/perf.overs_bowled if perf.overs_bowled > 0 else 0) }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if match.status != 'completed' %}
+                <div class="text-center">
+                    <a href="{{ url_for('update_score', id=match.id) }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-edit"></i> Update Score
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
