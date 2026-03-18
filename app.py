@@ -110,7 +110,7 @@ def players():
 @app.route('/player/add', methods=['GET', 'POST'])
 def add_player():
     if request.method == 'POST':
-        # Handle file upload (same as before)
+        # Handle file upload
         image_url = None
         if 'player_image' in request.files:
             file = request.files['player_image']
@@ -130,15 +130,32 @@ def add_player():
                 finally:
                     os.unlink(tmp_path)
 
+        # Use .get() for all fields to avoid KeyError
+        # Required fields - validate they exist
+        name = request.form.get('name')
+        age = request.form.get('age')
+        role = request.form.get('role')
+
+        # Validate required fields
+        if not name or not age or not role:
+            flash('Name, Age, and Role are required fields!', 'error')
+            return redirect(url_for('add_player'))
+
+        # Optional fields - use .get() with default values
+        batting_style = request.form.get('batting_style', '')
+        bowling_style = request.form.get('bowling_style', '')
+        jersey = request.form.get('jersey', '')
+        jerseynumber = request.form.get('jerseynumber', '')
+
         # Create player with base price 200
         player = Player(
-            name=request.form['name'],
-            age=int(request.form['age']),
-            role=request.form['role'],
-            batting_style=request.form.get('batting_style'),
-            bowling_style=request.form.get('bowling_style'),
-            jersey=request.form['jersey'],
-            phone=request.form['phone'],
+            name=name,
+            age=int(age),
+            role=role,
+            batting_style=batting_style,
+            bowling_style=bowling_style,
+            jersey=jersey,
+            jerseynumber=jerseynumber,
             base_price=200,  # Fixed base price
             image_url=image_url
         )
@@ -155,9 +172,9 @@ def add_player():
             )
             db.session.add(registration)
             db.session.commit()
-            flash(f'Player added and registered for season {active_season.name}!', 'success')
+            flash(f'Player {name} added and registered for season {active_season.name}!', 'success')
         else:
-            flash('Player added successfully! (No active season to register for)', 'success')
+            flash(f'Player {name} added successfully! (No active season to register for)', 'success')
 
         return redirect(url_for('players'))
 

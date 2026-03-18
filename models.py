@@ -14,7 +14,7 @@ class Player(db.Model):
     batting_style = db.Column(db.String(50))
     bowling_style = db.Column(db.String(50))
     jersey = db.Column(db.String(100))
-    phone = db.Column(db.String(20))
+    jerseynumber = db.Column(db.String(20))
     base_price = db.Column(db.Float, default=200)  # Default 200 rupees
     image_url = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

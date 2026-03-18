@@ -89,23 +89,24 @@
     </div>
 
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Recent Matches</h5>
-            </div>
-            <div class="card-body">
-                <div class="list-group">
-                    {% for match in matches[:5] %}
-                        <a href="{{ url_for('match_scoreboard', id=match.id) }}" class="list-group-item list-group-item-action">
-                            {{ match.team1.name }} vs {{ match.team2.name }}
-                            <span class="badge bg-info float-end">{{ match.status }}</span>
-                        </a>
-                    {% else %}
-                        <p class="text-muted">No matches scheduled yet.</p>
-                    {% endfor %}
-                </div>
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Recent Matches</h5>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for match in matches %}
+                    <a href="{{ url_for('match_scoreboard', id=match.id) }}" class="list-group-item list-group-item-action">
+                        <!-- Fix: Use the correct relationship names -->
+                        {{ match.team1_home.name }} vs {{ match.team2_away.name }}
+                        <span class="badge bg-info float-end">{{ match.status }}</span>
+                    </a>
+                {% else %}
+                    <p class="text-muted">No matches scheduled yet.</p>
+                {% endfor %}
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
